@@ -4,8 +4,6 @@
 // 1) drawInstr() → what the instructions screen looks like
 // 2) input handlers → how the player returns to the start screen
 // 3) helper functions specific to this screen
-resetStory();
-currentScreen = "game";
 
 // ------------------------------
 // Main draw function for instructions screen
@@ -28,7 +26,10 @@ function drawInstr() {
   // \n creates a line break in the text
   // This is useful for simple multi-line instructions
   const lines =
-    "Press the game button.\n" + "You have a chance to win or lose!";
+    "You’ll make 2 decisions about power allocation.\n" +
+    "Each choice changes Stability (+1 or -1).\n\n" +
+    "Goal: finish with Stability ≥ 2 to contain the breach.\n" +
+    "Keyboard: press 1 or 2 to choose an option.";
 
   text(lines, width / 2, 160);
 

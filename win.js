@@ -14,35 +14,25 @@
 // drawWin() is called from main.js
 // only when currentScreen === "win"
 function drawWin() {
-  // Green-tinted background to communicate success
-  background(200, 255, 200);
+  background(210, 255, 220);
 
   fill(0);
   textAlign(CENTER, CENTER);
 
-  // Main success message
-  textSize(40);
-  text("You Win!", width / 2, 300);
+  textSize(34);
+  text("SYSTEM STATUS: STABLE", width / 2, 280);
 
-  // Instruction text
-  textSize(20);
-  text("Click or press R to return to Start.", width / 2, 360);
+  textSize(18);
+  text("Breach contained.\nBuilding secured.", width / 2, 340);
+
+  textSize(16);
+  text("Click or press R to return to Start.", width / 2, 410);
 }
 
-// ------------------------------------------------------------
-// Mouse input for win screen
-// ------------------------------------------------------------
-// Any mouse click returns the player to the start screen
 function winMousePressed() {
   currentScreen = "start";
 }
 
-// ------------------------------------------------------------
-// Keyboard input for win screen
-// ------------------------------------------------------------
-// R is commonly used for “restart” in games
 function winKeyPressed() {
-  if (key === "r" || key === "R") {
-    currentScreen = "start";
-  }
+  if (key === "r" || key === "R") currentScreen = "start";
 }

@@ -4,6 +4,135 @@
 // 1) drawGame() → what the game screen looks like
 // 2) input handlers → what happens when the player clicks or presses keys
 // 3) helper functions specific to this screen
+// NOTE: Do NOT add setup() or draw() in this file
+// setup() and draw() live in main.js
+
+// ------------------------------
+// Game state (your decision tree)
+// ------------------------------
+let stability = 0; // starts at 0
+let sceneIndex = 0; // 0 = Scene 1, 1 = Scene 2
+
+const scenes = [
+  {
+    title: "ALERT: Unusual activity detected.",
+    body: "Power capacity is limited.\nWhere do you allocate resources?",
+    choices: [
+      { label: "Security Systems\n(Cameras, locks, alarms)", delta: +1 },
+      { label: "Occupant Comfort\n(Lights, HVAC, elevators)", delta: -1 },
+    ],
+  },
+  {
+    title: "ALERT: Unauthorized access confirmed.",
+    body: "Systems are under strain.",
+    choices: [
+      {
+        label: "Shut System Down\n(Lock doors, cut non-essential power)",
+        delta: +1,
+      },
+      { label: "Keep System Running\n(Maintain normal operation)", delta: -1 },
+    ],
+  },
+];
+
+// Two choice buttons (shared across scenes)
+const choiceBtns = [
+  { x: 260, y: 520, w: 360, h: 110, label: "" },
+  { x: 540, y: 520, w: 360, h: 110, label: "" },
+];
+
+// Call this when starting/restarting the game
+function resetGame() {
+  stability = 0;
+  sceneIndex = 0;
+}
+
+// ------------------------------
+// Main draw function for this screen
+// ------------------------------
+function drawGame() {
+  background(20); // darker, “security system” vibe
+
+  // HUD: stability
+  fill(255);
+  textAlign(LEFT, TOP);
+  textSize(18);
+  text(`Stability: ${stability}`, 20, 20);
+
+  // Current scene data
+  const scene = scenes[sceneIndex];
+
+  // Title + body
+  textAlign(CENTER, TOP);
+  textSize(26);
+  text(scene.title, width / 2, 90);
+
+  textSize(18);
+  text(scene.body, width / 2, 150);
+
+  // Update button labels from the current scene
+  choiceBtns[0].label = scene.choices[0].label;
+  choiceBtns[1].label = scene.choices[1].label;
+
+  // Draw both buttons
+  drawChoiceButton(choiceBtns[0]);
+  drawChoiceButton(choiceBtns[1]);
+
+  // Cursor feedback
+  const overAny = isHover(choiceBtns[0]) || isHover(choiceBtns[1]);
+  cursor(overAny ? HAND : ARROW);
+}
+
+// ------------------------------
+// Button drawing helper
+// ------------------------------
+function drawChoiceButton({ x, y, w, h, label }) {
+  rectMode(CENTER);
+  const hover = isHover({ x, y, w, h });
+
+  noStroke();
+  fill(hover ? color(80, 160, 220) : color(60, 120, 180));
+  rect(x, y, w, h, 14);
+
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(16);
+  text(label, x, y);
+}
+
+// ------------------------------
+// Input handlers
+// ------------------------------
+function gameMousePressed() {
+  if (isHover(choiceBtns[0])) choose(0);
+  else if (isHover(choiceBtns[1])) choose(1);
+}
+
+function gameKeyPressed() {
+  // Optional keyboard shortcuts
+  // 1 = left option, 2 = right option
+  if (key === "1") choose(0);
+  if (key === "2") choose(1);
+}
+
+// ------------------------------
+// Core logic (apply choice -> move forward -> evaluate)
+// ------------------------------
+function choose(choiceIndex) {
+  const scene = scenes[sceneIndex];
+  const picked = scene.choices[choiceIndex];
+
+  stability += picked.delta;
+
+  // Move to next scene
+  sceneIndex += 1;
+
+  // Scene 3: Outcome evaluation (no choices)
+  if (sceneIndex >= scenes.length) {
+    if (stability >= 2) currentScreen = "win";
+    else currentScreen = "lose";
+  }
+}
 
 // ------------------------------
 // Button data

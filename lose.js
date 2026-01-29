@@ -11,18 +11,23 @@
 // only when currentScreen === "lose"
 function drawLose() {
   // Red-tinted background to communicate failure
-  background(255, 210, 210);
+  background(30, 20, 20);
+  fill(255);
 
   fill(0);
   textAlign(CENTER, CENTER);
 
-  // Main message
-  textSize(40);
-  text("You Lose!", width / 2, 300);
+  // System status
+  textSize(34);
+  text("SYSTEM STATUS: FAILURE", width / 2, 280);
 
-  // Instruction text
-  textSize(20);
-  text("Click or press R to return to Start.", width / 2, 360);
+  // Outcome description
+  textSize(18);
+  text("Security compromised.\nSystem overload.", width / 2, 340);
+
+  // Restart instructions
+  textSize(16);
+  text("Click or press R to return to Start.", width / 2, 410);
 }
 
 // ------------------------------
