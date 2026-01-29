@@ -4,6 +4,8 @@
 // 1) drawInstr() → what the instructions screen looks like
 // 2) input handlers → how the player returns to the start screen
 // 3) helper functions specific to this screen
+resetStory();
+currentScreen = "game";
 
 // ------------------------------
 // Main draw function for instructions screen
