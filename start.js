@@ -62,7 +62,7 @@ function startMousePressed() {
 
   // If START is clicked, go to the game screen
   if (isHover(startBtn)) {
-    resetGame(); // <-- add this
+    resetCafe(); // <-- ADD THIS LINE
     currentScreen = "game";
   }
 
@@ -80,7 +80,7 @@ function startMousePressed() {
 // - I opens instructions
 function startKeyPressed() {
   if (keyCode === ENTER) {
-    resetGame(); // <-- add this
+    resetCafe(); // <-- ADD THIS LINE
     currentScreen = "game";
   }
 

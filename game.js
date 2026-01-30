@@ -4,135 +4,14 @@
 // 1) drawGame() → what the game screen looks like
 // 2) input handlers → what happens when the player clicks or presses keys
 // 3) helper functions specific to this screen
-// NOTE: Do NOT add setup() or draw() in this file
-// setup() and draw() live in main.js
 
 // ------------------------------
-// Game state (your decision tree)
+// Cafe story state (ADD THIS)
 // ------------------------------
-let stability = 0; // starts at 0
-let sceneIndex = 0; // 0 = Scene 1, 1 = Scene 2
-
-const scenes = [
-  {
-    title: "ALERT: Unusual activity detected.",
-    body: "Power capacity is limited.\nWhere do you allocate resources?",
-    choices: [
-      { label: "Security Systems\n(Cameras, locks, alarms)", delta: +1 },
-      { label: "Occupant Comfort\n(Lights, HVAC, elevators)", delta: -1 },
-    ],
-  },
-  {
-    title: "ALERT: Unauthorized access confirmed.",
-    body: "Systems are under strain.",
-    choices: [
-      {
-        label: "Shut System Down\n(Lock doors, cut non-essential power)",
-        delta: +1,
-      },
-      { label: "Keep System Running\n(Maintain normal operation)", delta: -1 },
-    ],
-  },
-];
-
-// Two choice buttons (shared across scenes)
-const choiceBtns = [
-  { x: 260, y: 520, w: 360, h: 110, label: "" },
-  { x: 540, y: 520, w: 360, h: 110, label: "" },
-];
-
-// Call this when starting/restarting the game
-function resetGame() {
-  stability = 0;
-  sceneIndex = 0;
-}
-
-// ------------------------------
-// Main draw function for this screen
-// ------------------------------
-function drawGame() {
-  background(20); // darker, “security system” vibe
-
-  // HUD: stability
-  fill(255);
-  textAlign(LEFT, TOP);
-  textSize(18);
-  text(`Stability: ${stability}`, 20, 20);
-
-  // Current scene data
-  const scene = scenes[sceneIndex];
-
-  // Title + body
-  textAlign(CENTER, TOP);
-  textSize(26);
-  text(scene.title, width / 2, 90);
-
-  textSize(18);
-  text(scene.body, width / 2, 150);
-
-  // Update button labels from the current scene
-  choiceBtns[0].label = scene.choices[0].label;
-  choiceBtns[1].label = scene.choices[1].label;
-
-  // Draw both buttons
-  drawChoiceButton(choiceBtns[0]);
-  drawChoiceButton(choiceBtns[1]);
-
-  // Cursor feedback
-  const overAny = isHover(choiceBtns[0]) || isHover(choiceBtns[1]);
-  cursor(overAny ? HAND : ARROW);
-}
-
-// ------------------------------
-// Button drawing helper
-// ------------------------------
-function drawChoiceButton({ x, y, w, h, label }) {
-  rectMode(CENTER);
-  const hover = isHover({ x, y, w, h });
-
-  noStroke();
-  fill(hover ? color(80, 160, 220) : color(60, 120, 180));
-  rect(x, y, w, h, 14);
-
-  fill(255);
-  textAlign(CENTER, CENTER);
-  textSize(16);
-  text(label, x, y);
-}
-
-// ------------------------------
-// Input handlers
-// ------------------------------
-function gameMousePressed() {
-  if (isHover(choiceBtns[0])) choose(0);
-  else if (isHover(choiceBtns[1])) choose(1);
-}
-
-function gameKeyPressed() {
-  // Optional keyboard shortcuts
-  // 1 = left option, 2 = right option
-  if (key === "1") choose(0);
-  if (key === "2") choose(1);
-}
-
-// ------------------------------
-// Core logic (apply choice -> move forward -> evaluate)
-// ------------------------------
-function choose(choiceIndex) {
-  const scene = scenes[sceneIndex];
-  const picked = scene.choices[choiceIndex];
-
-  stability += picked.delta;
-
-  // Move to next scene
-  sceneIndex += 1;
-
-  // Scene 3: Outcome evaluation (no choices)
-  if (sceneIndex >= scenes.length) {
-    if (stability >= 2) currentScreen = "win";
-    else currentScreen = "lose";
-  }
-}
+let cafeScene = "temp"; // "temp" -> "taste"
+let drinkTemp = ""; // "hot" or "cold"
+let drinkTaste = ""; // "sweet" or "bitter"
+let cafeResult = ""; // sentence shown on win screen
 
 // ------------------------------
 // Button data
@@ -155,31 +34,39 @@ const gameBtn = {
 // drawGame() is called from main.js *only*
 // when currentScreen === "game"
 function drawGame() {
-  // Set background colour for the game screen
   background(240, 230, 140);
 
-  // ---- Title and instructions text ----
-  fill(0); // black text
-  textSize(32);
+  fill(0);
   textAlign(CENTER, CENTER);
-  text("Game Screen", width / 2, 160);
+
+  textSize(34);
+  text("Café Order", width / 2, 140);
 
   textSize(18);
-  text(
-    "Click the button (or press ENTER) for a random result.",
-    width / 2,
-    210,
-  );
 
-  // ---- Draw the button ----
-  // We pass the button object to a helper function
-  drawGameButton(gameBtn);
-
-  // ---- Cursor feedback ----
-  // If the mouse is over the button, show a hand cursor
-  // Otherwise, show the normal arrow cursor
-  cursor(isHover(gameBtn) ? HAND : ARROW);
+  if (cafeScene === "temp") {
+    text("How do you want your drink?", width / 2, 240);
+    text("1) Hot", width / 2, 310);
+    text("2) Cold", width / 2, 350);
+    textSize(14);
+    text("Press 1 or 2", width / 2, 430);
+  } else if (cafeScene === "taste") {
+    text("What kind of taste do you want?", width / 2, 240);
+    text("1) Sweet", width / 2, 310);
+    text("2) Bitter", width / 2, 350);
+    textSize(14);
+    text("Press 1 or 2", width / 2, 430);
+  }
 }
+
+// ---- Draw the button ----
+// We pass the button object to a helper function
+drawGameButton(gameBtn);
+
+// ---- Cursor feedback ----
+// If the mouse is over the button, show a hand cursor
+// Otherwise, show the normal arrow cursor
+cursor(isHover(gameBtn) ? HAND : ARROW);
 
 // ------------------------------
 // Button drawing helper
@@ -219,10 +106,7 @@ function drawGameButton({ x, y, w, h, label }) {
 // This function is called from main.js
 // only when currentScreen === "game"
 function gameMousePressed() {
-  // Only trigger the outcome if the button is clicked
-  if (isHover(gameBtn)) {
-    triggerRandomOutcome();
-  }
+  // no mouse interaction needed for this one
 }
 
 // ------------------------------
@@ -230,9 +114,28 @@ function gameMousePressed() {
 // ------------------------------
 // Allows keyboard-only interaction (accessibility + design)
 function gameKeyPressed() {
-  // ENTER key triggers the same behaviour as clicking the button
-  if (keyCode === ENTER) {
-    triggerRandomOutcome();
+  // Screen 1: temperature choice
+  if (cafeScene === "temp") {
+    if (key === "1") {
+      drinkTemp = "hot";
+      cafeScene = "taste";
+    }
+    if (key === "2") {
+      drinkTemp = "cold";
+      cafeScene = "taste";
+    }
+  }
+
+  // Screen 2: taste choice -> compute result -> go to win screen
+  else if (cafeScene === "taste") {
+    if (key === "1") drinkTaste = "sweet";
+    if (key === "2") drinkTaste = "bitter";
+
+    // only continue if they picked 1 or 2
+    if (drinkTaste !== "") {
+      cafeResult = makeCafeResult(drinkTemp, drinkTaste);
+      currentScreen = "win"; // use win as your RESULT screen
+    }
   }
 }
 
@@ -254,4 +157,19 @@ function triggerRandomOutcome() {
   } else {
     currentScreen = "lose";
   }
+}
+
+function resetCafe() {
+  cafeScene = "temp";
+  drinkTemp = "";
+  drinkTaste = "";
+  cafeResult = "";
+}
+
+function makeCafeResult(temp, taste) {
+  if (temp === "hot" && taste === "sweet") return "A warm, slow morning.";
+  if (temp === "hot" && taste === "bitter") return "A quiet focus settles in.";
+  if (temp === "cold" && taste === "sweet")
+    return "A bright, gentle afternoon.";
+  return "A sharp, awake afternoon."; // cold + bitter
 }

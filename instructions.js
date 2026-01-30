@@ -26,10 +26,7 @@ function drawInstr() {
   // \n creates a line break in the text
   // This is useful for simple multi-line instructions
   const lines =
-    "You’ll make 2 decisions about power allocation.\n" +
-    "Each choice changes Stability (+1 or -1).\n\n" +
-    "Goal: finish with Stability ≥ 2 to contain the breach.\n" +
-    "Keyboard: press 1 or 2 to choose an option.";
+    "Press the game button.\n" + "You have a chance to win or lose!";
 
   text(lines, width / 2, 160);
 
