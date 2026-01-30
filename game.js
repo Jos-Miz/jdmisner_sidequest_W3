@@ -6,7 +6,7 @@
 // 3) helper functions specific to this screen
 
 // ------------------------------
-// Cafe story state (ADD THIS)
+// Cafe story state
 // ------------------------------
 let cafeScene = "temp"; // "temp" -> "taste"
 let drinkTemp = ""; // "hot" or "cold"
@@ -14,18 +14,22 @@ let drinkTaste = ""; // "sweet" or "bitter"
 let cafeResult = ""; // sentence shown on win screen
 
 // ------------------------------
-// Button data
+// Choice button data (2 buttons)
 // ------------------------------
-// This object stores all the information needed to draw
-// and interact with the button on the game screen.
-// Keeping this in one object makes it easier to move,
-// resize, or restyle the button later.
-const gameBtn = {
-  x: 400, // x position (centre of the button)
-  y: 550, // y position (centre of the button)
-  w: 260, // width
-  h: 90, // height
-  label: "PRESS HERE", // text shown on the button
+const choiceBtn1 = {
+  x: 450, // centered for 900px wide canvas; adjust if needed
+  y: 320,
+  w: 360,
+  h: 70,
+  label: "",
+};
+
+const choiceBtn2 = {
+  x: 450,
+  y: 410,
+  w: 360,
+  h: 70,
+  label: "",
 };
 
 // ------------------------------
@@ -44,58 +48,44 @@ function drawGame() {
 
   textSize(18);
 
+  // Update button labels per scene
   if (cafeScene === "temp") {
     text("How do you want your drink?", width / 2, 240);
-    text("1) Hot", width / 2, 310);
-    text("2) Cold", width / 2, 350);
-    textSize(14);
-    text("Press 1 or 2", width / 2, 430);
+    choiceBtn1.label = "Hot ☕";
+    choiceBtn2.label = "Cold 🧊";
   } else if (cafeScene === "taste") {
     text("What kind of taste do you want?", width / 2, 240);
-    text("1) Sweet", width / 2, 310);
-    text("2) Bitter", width / 2, 350);
-    textSize(14);
-    text("Press 1 or 2", width / 2, 430);
+    choiceBtn1.label = "Sweet 🍯";
+    choiceBtn2.label = "Bitter ☕";
   }
+
+  // Draw the buttons
+  drawGameButton(choiceBtn1);
+  drawGameButton(choiceBtn2);
+
+  // Cursor feedback
+  cursor(isHover(choiceBtn1) || isHover(choiceBtn2) ? HAND : ARROW);
+
+  // Optional small helper text (remove if you want)
+  textSize(14);
+  fill(40);
+  text("Click a button (or press 1 / 2)", width / 2, 510);
 }
-
-// ---- Draw the button ----
-// We pass the button object to a helper function
-drawGameButton(gameBtn);
-
-// ---- Cursor feedback ----
-// If the mouse is over the button, show a hand cursor
-// Otherwise, show the normal arrow cursor
-cursor(isHover(gameBtn) ? HAND : ARROW);
 
 // ------------------------------
 // Button drawing helper
 // ------------------------------
-// This function is responsible *only* for drawing the button.
-// It does NOT handle clicks or game logic.
 function drawGameButton({ x, y, w, h, label }) {
   rectMode(CENTER);
 
-  // Check if the mouse is hovering over the button
-  // isHover() is defined in main.js so it can be shared
   const hover = isHover({ x, y, w, h });
 
   noStroke();
+  fill(hover ? color(180, 220, 255, 220) : color(200, 220, 255, 190));
+  rect(x, y, w, h, 14);
 
-  // Change button colour when hovered
-  // This gives visual feedback to the player
-  fill(
-    hover
-      ? color(180, 220, 255, 220) // lighter blue on hover
-      : color(200, 220, 255, 190), // normal state
-  );
-
-  // Draw the button rectangle
-  rect(x, y, w, h, 14); // last value = rounded corners
-
-  // Draw the button text
   fill(0);
-  textSize(28);
+  textSize(22);
   textAlign(CENTER, CENTER);
   text(label, x, y);
 }
@@ -106,13 +96,35 @@ function drawGameButton({ x, y, w, h, label }) {
 // This function is called from main.js
 // only when currentScreen === "game"
 function gameMousePressed() {
-  // no mouse interaction needed for this one
+  // Screen 1: temperature choice
+  if (cafeScene === "temp") {
+    if (isHover(choiceBtn1)) {
+      drinkTemp = "hot";
+      cafeScene = "taste";
+      return;
+    }
+    if (isHover(choiceBtn2)) {
+      drinkTemp = "cold";
+      cafeScene = "taste";
+      return;
+    }
+  }
+
+  // Screen 2: taste choice -> compute result -> go to win screen
+  else if (cafeScene === "taste") {
+    if (isHover(choiceBtn1)) drinkTaste = "sweet";
+    if (isHover(choiceBtn2)) drinkTaste = "bitter";
+
+    if (drinkTaste !== "") {
+      cafeResult = makeCafeResult(drinkTemp, drinkTaste);
+      currentScreen = "win"; // using win screen as RESULT screen
+    }
+  }
 }
 
 // ------------------------------
-// Keyboard input for this screen
+// Keyboard input for this screen (optional accessibility)
 // ------------------------------
-// Allows keyboard-only interaction (accessibility + design)
 function gameKeyPressed() {
   // Screen 1: temperature choice
   if (cafeScene === "temp") {
@@ -140,25 +152,8 @@ function gameKeyPressed() {
 }
 
 // ------------------------------
-// Game logic: win or lose
+// Helpers / game logic
 // ------------------------------
-// This function decides what happens next in the game.
-// It does NOT draw anything.
-function triggerRandomOutcome() {
-  // random() returns a value between 0 and 1
-  // Here we use a 50/50 chance:
-  // - less than 0.5 → win
-  // - 0.5 or greater → lose
-  //
-  // You can bias this later, for example:
-  // random() < 0.7 → 70% chance to win
-  if (random() < 0.5) {
-    currentScreen = "win";
-  } else {
-    currentScreen = "lose";
-  }
-}
-
 function resetCafe() {
   cafeScene = "temp";
   drinkTemp = "";
