@@ -38,7 +38,7 @@ const choiceBtn2 = {
 // drawGame() is called from main.js *only*
 // when currentScreen === "game"
 function drawGame() {
-  background(240, 230, 140);
+  background(255, 235, 210);
 
   fill(0);
   textAlign(CENTER, CENTER);
@@ -162,9 +162,11 @@ function resetCafe() {
 }
 
 function makeCafeResult(temp, taste) {
-  if (temp === "hot" && taste === "sweet") return "A warm, slow morning.";
-  if (temp === "hot" && taste === "bitter") return "A quiet focus settles in.";
-  if (temp === "cold" && taste === "sweet")
-    return "A bright, gentle afternoon.";
-  return "A sharp, awake afternoon."; // cold + bitter
+  if (temp === "hot" && taste === "sweet") return "You got a hot mocha.";
+
+  if (temp === "hot" && taste === "bitter") return "You got a hot americano.";
+
+  if (temp === "cold" && taste === "sweet") return "You got an iced mocha.";
+
+  return "You got an iced americano."; // cold + bitter
 }
